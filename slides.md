@@ -288,13 +288,13 @@ layout: fact
 
 # Execution Timeline
 
-<img src="sequential-processing.png"  />
+<img src="/sequential-processing.png"  />
 
 --- 
 
 # Non-Blocking Implementation
 
-<img src="non-blocking-processing.png"  />
+<img src="/non-blocking-processing.png"  />
 
 --- 
 
