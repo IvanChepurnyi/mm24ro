@@ -34,8 +34,6 @@ title: Blazingly Fast Catalog Data Streaming and Processing
 
 🏆 Competitive Advantage
 
-🔄 Real-time Inventory Updates
-
 📈 Scalability
 
 ⚙️ Operational Efficiency
@@ -110,10 +108,9 @@ layout: fact
 
     Reduce scope of data your database has to process
 
-🔀 Merging values in app code
+🔀 Merging values in PHP code
 
     Do not use queries where application shines
-
 
 </v-clicks>
 
@@ -121,7 +118,7 @@ layout: fact
 
 # ⚠️ Mind the gap
 
-### Identifier can have huge gaps
+### Identifiers can have huge gaps
 
 <v-click>
 
@@ -152,6 +149,21 @@ GROUP BY CEIL(entity_id / 5000)
 </v-clicks>
 
 --- 
+
+# ⚠️ Unbuffered Queries
+
+
+<v-clicks>
+
+🔗 Separated connections for each query type
+
+🔄 Fetch each row as a generator
+
+📊 Interleave reading by using a sorted query result 
+
+</v-clicks>
+
+--- 
 layout: fact
 ---
 
@@ -165,33 +177,9 @@ layout: fact
 
 🔁 *Anchor* categories include products from child subtree
 
-⛔  *In-active* categories disable whole subtree
+⛔ *In-active* categories disable whole subtree
 
 ⏭️ *Disabled* and *Not Visible Individually* products skipped
-
-</v-clicks>
-
---- 
-layout: fact 
----
-
-## 💁 Finite-State Machine
-
---- 
-
-# Category Tree FSM
-
-<v-clicks>
-
-⬇️ Order categories by path in ascending order
-
-⛔ Transition to inactive state including level
-
-⏭️ Ignore records on deeper level when marked in-active
-
-⤵️ Push active parent category to anchor ids stack
-
-⤴️ Pop from anchor ids stack when tree level gets reduced
 
 </v-clicks>
 
@@ -199,22 +187,37 @@ layout: fact
 
 # Supporting Table Schema
 
-```xml {all|3-5,9-12|6-8}
-<schema ...>
-    <table name="blazingly_fast_index_category_lookup_anchors">
-        <column xsi:type="int"
-                unsigned="true" nullable="false" 
-                name="entity_id" comment="Category ID" />
-        <column xsi:type="varchar" 
-                length="255" nullable="false"
-                name="anchor_ids" comment="Anchor Parents" />
+<v-clicks>
 
-        <constraint xsi:type="primary" referenceId="PRIMARY">
-            <column name="entity_id" />
-        </constraint>
-    </table>
-</schema>
-```
+- **category_id** and **store_id** as a primary key
+- **anchor_ids** - JSON array of all parent categories that are `is_anchor`
+
+</v-clicks>
+
+---
+layout: fact
+---
+
+## 💁 State Machine
+
+--- 
+
+# Category Tree State Machine
+
+<v-clicks>
+
+⬇️ Order categories by path in ascending order
+
+⛔ Transition to inactive state by tracking level
+
+⏭️ Ignore records on deeper level when marked in-active
+
+⤵️ Push active parent category to anchor ids stack
+
+⤴️ Pop from anchor ids stack when tree level changes
+
+</v-clicks>
+
 
 --- 
 
@@ -233,13 +236,13 @@ layout: fact
 
 # Reference Setup
 
-
 <v-clicks>
 
-- 36 categories
+- 1k categories
 - 3 store views
 - 260k Real SKUs
 - 5k visible configurable products
+- ~30% visible simple products
 
 ```bash
 gh repo clone EcomDev/performance-training ./
@@ -250,25 +253,27 @@ make large
 
 ---
 
-# How it compares
+# How fast is it?
 
 <v-clicks>
 
-## Standard Indexer Performance
-
 ````bash
+# Single-threaded
 bin/magento indexer:reindex catalog_category_product
-> Category Products index has been rebuilt successfully in 00:04:31
+> Category Products index has been rebuilt successfully in 00:04:28
 ````
-
-&nbsp;
-## Data Stream
 
 ````bash
-bin/magento indexer:reindex catalog_category_product_improved
-> Category Products index has been rebuilt successfully in 00:00:22
+# Multi-threaded
+bin/magento indexer:reindex catalog_category_product
+> Category Products index has been rebuilt successfully in 00:02:16
 ````
 
+````bash
+# New Implementation
+bin/magento indexer:reindex catalog_category_product_improved
+> Category Products index has been rebuilt successfully in 00:00:06
+````
 
 </v-clicks>
 
@@ -296,29 +301,31 @@ layout: fact
 
 <img src="/non-blocking-processing.png"  />
 
---- 
+---
+layout: fact
+---
 
-## Proof of Concept Indexer Implementation
+## Proof of Concept 
 
-https://www.dropbox.com/s/vg3nlg5fxuh0mmv/index-poc-from-training.tgz?dl=0
+<img src="/qrcode-index-poc.svg" class="w-40% ml-30% mt-8  shadow" />
 
-<img src="/qrcode-index-implementation.png" class="w-50 ml-40 mt-8  shadow" />
+---
+layout: fact
+---
+
+## It is coming to
+
+<img src="/mage-os.svg" class="w-80% ml-10 mt-3  shadow">
 
 ---
 
-## Mage-OS performance work-in-progress
+## 5-Day Performance Training
 
-**Database Changelog**
+📅 Date: June 17th, 2024
 
-Replace MView with better context aware change detection 
+📍 Location: Innobyte, Bucharest, Romania
 
-https://github.com/EcomDev/mage-os-database-changelog
-
-**Indexation Framework**
-
-Make indexation 🔥 Blazingly Fast 🔥
-
-https://github.com/EcomDev/mage-os-indexer
+🔗 https://mage-os-performance-bucharest.eventbrite.com
 
 
 ---
