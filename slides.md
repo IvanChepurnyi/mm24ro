@@ -307,6 +307,7 @@ layout: fact
 
 ## Proof of Concept 
 
+https://www.dropbox.com/scl/fi/woxw4y34zptd50dmsq0mi/indexer-poc.tgz?rlkey=7pbjos8u0akuxcl7c67ovf43w&st=klcssm2y&dl=0
 <img src="/qrcode-index-poc.svg" class="w-40% ml-30% mt-8  shadow" />
 
 ---
